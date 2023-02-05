@@ -1,2 +1,2 @@
 # Personal Website
-Building a website with Python/Flask and Bootstrap templates
+Building a website with Python/Flask and Bootstrap templates. WIP.
