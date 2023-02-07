@@ -4,3 +4,4 @@ include/*
 pyvenv.cfg
 __pycache__/*
 personal_website.code-workspace
+.DS_Store
