@@ -950,6 +950,7 @@ a:hover {
 # Portfolio
 --------------------------------------------------------------*/
 .work-box {
+  height: calc(100% - 3rem);
   margin-bottom: 3rem;
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
@@ -957,20 +958,28 @@ a:hover {
 }
 
 .work-box:hover img {
-  transform: scale(1.3);
+  transform: scale(1.05);
 }
 
 .work-img {
   display: block;
   overflow: hidden;
+  position: relative;
+  padding-top: 75%;
 }
 
 .work-img img {
   transition: all 1s;
+  position: absolute;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .work-content {
   padding: 2rem 3% 1rem 4%;
+  min-height: 121px;
 }
 
 .work-content .w-more {
@@ -1251,13 +1260,25 @@ a:hover {
 @media (min-width: 767px) {
   .card-blog {
     margin-bottom: 3rem;
+    height: calc(100% - 3rem);
   }
 }
 
 .card-blog .card-body {
   position: relative;
 }
+.card-blog .card-img {
+  position: relative;
+  padding-top: 85%;
+}
 
+.card-blog .card-img img {
+  position: absolute;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
 .card-blog .card-category-box {
   position: absolute;
   text-align: center;
@@ -1293,6 +1314,7 @@ a:hover {
 
 .card-blog .card-description {
   color: #4e4e4e;
+  margin-bottom: 0;
 }
 
 .card-blog .post-author {
