@@ -4,3 +4,4 @@ include/*
 __pychache__/*
 README.md
 runtime.txt
+.env
