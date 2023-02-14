@@ -17,15 +17,18 @@ app.config["SECURITY_EMAIL_SENDER"] = os.environ.get("EMAIL")
 app.config["MAIL_USE_TLS"] = True
 app.config["USE_SSL"] = False
 
+
 @app.route("/")
 def index():
     """Docstring for index."""
     return render_template("index.html", sitekey=os.environ.get("RECAPTCHA_SITE_KEY"))
 
+
 @app.route("/resume")
 def show_resume():
     """Docstring for show_resume."""
     return render_template("resume.html")
+
 
 @app.route("/contact", methods=["POST"])
 def contact():
@@ -36,7 +39,7 @@ def contact():
         contact_email = request.form["email"]
         contact_subject = request.form["subject"]
         contact_message = request.form["message"]
-        captcha_response = request.form['g-recaptcha-response']
+        captcha_response = request.form["g-recaptcha-response"]
 
         if is_human(captcha_response):
             pass
@@ -45,10 +48,10 @@ def contact():
 
         try:
             response = requests.get(
-            os.environ.get("EMAIL_API_ENDPOINT"),
-            params={"email": contact_email},
-            headers={"Authorization": os.environ.get("EMAIL_API_KEY")},
-            timeout=15,
+                os.environ.get("EMAIL_API_ENDPOINT"),
+                params={"email": contact_email},
+                headers={"Authorization": os.environ.get("EMAIL_API_KEY")},
+                timeout=15,
             )
         except ConnectTimeout:
             return "Error connecting to email validation API!"
@@ -71,16 +74,20 @@ def contact():
             return "Invalid email address!"
         return "Message Sent!"
 
+
 def is_human(captcha_response):
     """Docstring for is_human."""
     secret = os.environ.get("RECAPTCHA_SECRET_KEY")
-    payload = {'response':captcha_response, 'secret':secret}
+    payload = {"response": captcha_response, "secret": secret}
     try:
-        response = requests.post("https://www.google.com/recaptcha/api/siteverify", payload, timeout=10)
+        response = requests.post(
+            "https://www.google.com/recaptcha/api/siteverify", payload, timeout=10
+        )
     except ConnectTimeout:
         return False
     response_text = json.loads(response.text)
-    return response_text['success']
+    return response_text["success"]
+
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5002))
