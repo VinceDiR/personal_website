@@ -52,14 +52,14 @@ def contact():
                 os.environ.get("EMAIL_API_ENDPOINT"),
                 params={"email": contact_email},
                 headers={"Authorization": os.environ.get("EMAIL_API_KEY")},
-                timeout=15,
+                timeout=30,
             )
         except ConnectTimeout:
             return "Error connecting to email validation API!"
 
         status = response.json()["status"]
 
-        if status == "valid":
+        if status == "valid" or status == "unknown":
             msg = Message(
                 f"Website Inquiry: {contact_subject}",
                 sender=contact_email,
