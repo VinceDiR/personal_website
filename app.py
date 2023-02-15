@@ -35,45 +35,44 @@ def show_resume():
 def contact():
     """Docstring for contact."""
 
-    if request.method == "POST":
-        contact_name = request.form["name"]
-        contact_email = request.form["email"]
-        contact_subject = request.form["subject"]
-        contact_message = request.form["message"]
-        captcha_response = request.form["g-recaptcha-response"]
+    contact_name = request.form["name"]
+    contact_email = request.form["email"]
+    contact_subject = request.form["subject"]
+    contact_message = request.form["message"]
+    captcha_response = request.form["g-recaptcha-response"]
 
-        if is_human(captcha_response):
-            pass
-        else:
-            return "reCAPTCHA failed!"
+    if is_human(captcha_response):
+        pass
+    else:
+        return "reCAPTCHA failed!"
 
-        try:
-            response = requests.get(
-                os.environ.get("EMAIL_API_ENDPOINT"),
-                params={"email": contact_email},
-                headers={"Authorization": os.environ.get("EMAIL_API_KEY")},
-                timeout=30,
-            )
-        except ConnectTimeout:
-            return "Error connecting to email validation API!"
+    try:
+        response = requests.get(
+            os.environ.get("EMAIL_API_ENDPOINT"),
+            params={"email": contact_email},
+            headers={"Authorization": os.environ.get("EMAIL_API_KEY")},
+            timeout=30,
+        )
+    except ConnectTimeout:
+        return "Could not validate email address!"
 
-        status = response.json()["status"]
+    status = response.json()["status"]
 
-        if status == "valid" or status == "unknown":
-            msg = Message(
-                f"Website Inquiry: {contact_subject}",
-                sender=contact_email,
-                recipients=[os.environ.get("EMAIL")],
-            )
-            msg.body = f"""
-            From: {contact_name} <{contact_email}>
-            Subject: {contact_subject}
-            Body: {contact_message}
-            """
-            mail.send(msg)
-        elif status == "invalid":
-            return "Invalid email address!"
-        return "Message Sent!"
+    if status in ("valid", "unknown"):
+        msg = Message(
+            f"Website Inquiry: {contact_subject}",
+            sender=contact_email,
+            recipients=[os.environ.get("EMAIL")],
+        )
+        msg.body = f"""
+        From: {contact_name} <{contact_email}>
+        Subject: {contact_subject}
+        Body: {contact_message}
+        """
+        mail.send(msg)
+    else:
+        return "Invalid email address!"
+    return "Message Sent!"
 
 
 def is_human(captcha_response):
