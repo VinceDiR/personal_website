@@ -5,9 +5,12 @@ import requests
 from requests.exceptions import ConnectTimeout
 from flask import Flask, render_template, request
 from flask_mail import Mail, Message
+from dotenv import load_dotenv
+
+load_dotenv()
 
 app = Flask(__name__)
-mail = Mail(app)
+
 
 app.config["MAIL_SERVER"] = os.environ.get("MAIL_SERVER")
 app.config["MAIL_PORT"] = os.environ.get("EMAIL_PORT")
@@ -17,6 +20,7 @@ app.config["SECURITY_EMAIL_SENDER"] = os.environ.get("EMAIL")
 app.config["MAIL_USE_TLS"] = True
 app.config["USE_SSL"] = False
 
+mail = Mail(app)
 
 @app.route("/")
 def index():
