@@ -3,8 +3,11 @@ import os
 import json
 import requests
 from requests.exceptions import ConnectTimeout
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request #flash
 from flask_mail import Mail, Message
+from dotenv import load_dotenv
+
+load_dotenv()
 
 app = Flask(__name__)
 
@@ -34,7 +37,6 @@ def show_resume():
 @app.route("/contact", methods=["POST"])
 def contact():
     """Docstring for contact."""
-
     contact_name = request.form["name"]
     contact_email = request.form["email"]
     contact_subject = request.form["subject"]
@@ -45,6 +47,7 @@ def contact():
         pass
     else:
         return "reCAPTCHA failed!"
+        # return flash(reCAPTCHA failed!, "error")
 
     try:
         response = requests.get(
@@ -54,7 +57,8 @@ def contact():
             timeout=30,
         )
     except ConnectTimeout:
-        return "Could not validate email address!"
+        return "Could not validate email address!", "error"
+        # flash("Could not validate email address!", "error")
 
     status = response.json()["status"]
 
@@ -72,7 +76,9 @@ def contact():
         mail.send(msg)
     else:
         return "Invalid email address!"
-    return "Message Sent!"
+        # return flash("Invalid email address!", "error")
+    return "Message Sent!", "success"
+    # return flash("Message Sent!", "success")
 
 
 def is_human(captcha_response):

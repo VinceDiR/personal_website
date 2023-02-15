@@ -507,14 +507,21 @@
                           </div>
                           <div class="g-recaptcha" data-sitekey="{{ sitekey }}"></div>
                           <div class="col-md-12 text-center my-3">
-                            <div class="loading">Loading</div>
-                            <div class="error-message"></div>
+                            {% with messages = get_flashed_messages(with_categories=true) %}
+                            {% if messages %}
+                            {% for category, message in messages %}
+                            <div class="alert {{ category }}"> {{ message|capitalize }} </div>
+                            {% endfor %}
+                            {% endif %}
+                            {% endwith %}<div class="loading">Loading</div>
+                            <!-- <div class="error-message"></div>
                             <div class="sent-message">Your message has been sent. Thank you!</div>
+                          </div> -->
+                            <div class="col-md-12 text-center">
+                              <button type="submit" class="button button-a button-big button-rouded">Send
+                                Message</button>
+                            </div>
                           </div>
-                          <div class="col-md-12 text-center">
-                            <button type="submit" class="button button-a button-big button-rouded">Send Message</button>
-                          </div>
-                        </div>
                       </form>
                     </div>
                   </div>
