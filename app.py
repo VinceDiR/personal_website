@@ -5,9 +5,6 @@ import requests
 from requests.exceptions import ConnectTimeout
 from flask import Flask, render_template, request
 from flask_mail import Mail, Message
-from dotenv import load_dotenv
-
-load_dotenv()
 
 app = Flask(__name__)
 
