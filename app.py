@@ -3,7 +3,8 @@ import os
 import json
 import requests
 from requests.exceptions import ConnectTimeout
-from flask import Flask, render_template, request #flash
+from flask import Flask, render_template, request
+# from flask import flash
 from flask_mail import Mail, Message
 from dotenv import load_dotenv
 
@@ -57,7 +58,7 @@ def contact():
             timeout=30,
         )
     except ConnectTimeout:
-        return "Could not validate email address!", "error"
+        return "Could not validate email address!"
         # flash("Could not validate email address!", "error")
 
     status = response.json()["status"]
@@ -77,7 +78,7 @@ def contact():
     else:
         return "Invalid email address!"
         # return flash("Invalid email address!", "error")
-    return "Message Sent!", "success"
+    return "Message Sent!"
     # return flash("Message Sent!", "success")
 
 
