@@ -3,8 +3,7 @@ import os
 import json
 import requests
 from requests.exceptions import ConnectTimeout
-from flask import Flask, render_template, request
-# from flask import flash
+from flask import Flask, render_template, request, flash, redirect, url_for
 from flask_mail import Mail, Message
 from dotenv import load_dotenv
 
@@ -12,6 +11,7 @@ load_dotenv()
 
 app = Flask(__name__)
 
+app.secret_key = os.environ.get("FLASK_KEY")
 
 app.config["MAIL_SERVER"] = os.environ.get("MAIL_SERVER")
 app.config["MAIL_PORT"] = os.environ.get("EMAIL_PORT")
@@ -47,8 +47,9 @@ def contact():
     if is_human(captcha_response):
         pass
     else:
-        return "reCAPTCHA failed!"
-        # return flash(reCAPTCHA failed!, "error")
+        flash("reCAPTCHA failed!", "error")
+        return redirect(url_for('index'))
+        
 
     try:
         response = requests.get(
@@ -58,8 +59,8 @@ def contact():
             timeout=5,
         )
     except ConnectTimeout:
-        return "Could not validate email address!"
-        # flash("Could not validate email address!", "error")
+        flash("Could not validate email address!", "error")
+        return redirect(url_for('index'))
 
     status = response.json()["status"]
 
@@ -76,10 +77,10 @@ def contact():
         """
         mail.send(msg)
     else:
-        return "Invalid email address!"
-        # return flash("Invalid email address!", "error")
-    return "Message Sent!"
-    # return flash("Message Sent!", "success")
+        flash("Invalid email address!", "error")
+        return redirect(url_for('index'))
+    flash("Message Sent!", "success")
+    return redirect(url_for('index'))
 
 
 def is_human(captcha_response):
