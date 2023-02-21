@@ -1163,16 +1163,6 @@ a:hover {
   }
 }
 
-/*
-.alert.success {
-  background-color: green;
-}
-
-.alert.error {
-  background-color: red;
-}
-*/
-
 .php-email-form .error-message {
   display: none;
   color: #fff;
