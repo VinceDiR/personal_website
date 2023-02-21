@@ -55,7 +55,7 @@ def contact():
             os.environ.get("EMAIL_API_ENDPOINT"),
             params={"email": contact_email},
             headers={"Authorization": os.environ.get("EMAIL_API_KEY")},
-            timeout=30,
+            timeout=5,
         )
     except ConnectTimeout:
         return "Could not validate email address!"
