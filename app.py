@@ -4,6 +4,7 @@ import json
 import requests
 from requests.exceptions import ConnectTimeout
 from flask import Flask, render_template, request
+
 # from flask import flash
 from flask_mail import Mail, Message
 from dotenv import load_dotenv
@@ -11,7 +12,6 @@ from dotenv import load_dotenv
 load_dotenv()
 
 app = Flask(__name__)
-
 
 app.config["MAIL_SERVER"] = os.environ.get("MAIL_SERVER")
 app.config["MAIL_PORT"] = os.environ.get("EMAIL_PORT")
@@ -28,12 +28,10 @@ def index():
     """Docstring for index."""
     return render_template("index.html", sitekey=os.environ.get("RECAPTCHA_SITE_KEY"))
 
-
 @app.route("/resume")
 def show_resume():
     """Docstring for show_resume."""
     return render_template("resume.html")
-
 
 @app.route("/contact", methods=["POST"])
 def contact():
@@ -81,7 +79,6 @@ def contact():
     return "Message Sent!"
     # return flash("Message Sent!", "success")
 
-
 def is_human(captcha_response):
     """Docstring for is_human."""
     secret = os.environ.get("RECAPTCHA_SECRET_KEY")
@@ -94,7 +91,6 @@ def is_human(captcha_response):
         return False
     response_text = json.loads(response.text)
     return response_text["success"]
-
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5002))
