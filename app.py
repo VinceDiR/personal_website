@@ -4,8 +4,6 @@ import json
 import requests
 from requests.exceptions import ConnectTimeout
 from flask import Flask, render_template, request
-
-# from flask import flash
 from flask_mail import Mail, Message
 from dotenv import load_dotenv
 
@@ -23,15 +21,18 @@ app.config["USE_SSL"] = False
 
 mail = Mail(app)
 
+
 @app.route("/")
 def index():
     """Docstring for index."""
     return render_template("index.html", sitekey=os.environ.get("RECAPTCHA_SITE_KEY"))
 
+
 @app.route("/resume")
 def show_resume():
     """Docstring for show_resume."""
     return render_template("resume.html")
+
 
 @app.route("/contact", methods=["POST"])
 def contact():
@@ -42,24 +43,12 @@ def contact():
     contact_message = request.form["message"]
     captcha_response = request.form["g-recaptcha-response"]
 
-    if is_human(captcha_response):
-        pass
-    else:
+    if is_human(captcha_response) is False:
         return "reCAPTCHA failed!"
-        # return flash(reCAPTCHA failed!, "error")
 
-    try:
-        response = requests.get(
-            os.environ.get("EMAIL_API_ENDPOINT"),
-            params={"email": contact_email},
-            headers={"Authorization": os.environ.get("EMAIL_API_KEY")},
-            timeout=30,
-        )
-    except ConnectTimeout:
+    status = is_valid_email(contact_email)
+    if status is False:
         return "Could not validate email address!"
-        # flash("Could not validate email address!", "error")
-
-    status = response.json()["status"]
 
     if status in ("valid", "unknown"):
         msg = Message(
@@ -71,13 +60,13 @@ def contact():
         From: {contact_name} <{contact_email}>
         Subject: {contact_subject}
         Body: {contact_message}
-        """
+        # """
         mail.send(msg)
-    else:
-        return "Invalid email address!"
-        # return flash("Invalid email address!", "error")
-    return "Message Sent!"
-    # return flash("Message Sent!", "success")
+        print("Email sent successfully")
+        return "Message Sent!"
+
+    return "Invalid email address!"
+
 
 def is_human(captcha_response):
     """Docstring for is_human."""
@@ -87,10 +76,25 @@ def is_human(captcha_response):
         response = requests.post(
             "https://www.google.com/recaptcha/api/siteverify", payload, timeout=10
         )
+        response_text = json.loads(response.text)
+        return response_text["success"]
     except ConnectTimeout:
         return False
-    response_text = json.loads(response.text)
-    return response_text["success"]
+
+
+def is_valid_email(email):
+    """Docstring for is_valid_email."""
+    try:
+        response = requests.get(
+            os.environ.get("EMAIL_API_ENDPOINT"),
+            params={"email": email},
+            headers={"Authorization": os.environ.get("EMAIL_API_KEY")},
+            timeout=30,
+        )
+        return response.json()["status"]
+    except ConnectTimeout:
+        return False
+
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5002))

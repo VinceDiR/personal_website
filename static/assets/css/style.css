@@ -1,4 +1,4 @@
-/**
+/* *
 * Template Name: DevFolio - v4.10.0
 * Template URL: https://bootstrapmade.com/devfolio-bootstrap-portfolio-html-template/
 * Author: BootstrapMade.com
@@ -1398,4 +1398,10 @@ footer .credits {
 
 footer .credits a {
   color: #fff;
+}
+
+
+/*------/ reCAPTCHA /------*/
+.rc-anchor-alert{
+  display: none !important;
 }

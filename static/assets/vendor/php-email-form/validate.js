@@ -13,7 +13,7 @@
       event.preventDefault();
 
       let thisForm = this;
-
+       
       let action = thisForm.getAttribute('action');
       let recaptcha = thisForm.getAttribute('data-recaptcha-site-key');
       
@@ -26,7 +26,6 @@
       thisForm.querySelector('.sent-message').classList.remove('d-block');
 
       let formData = new FormData( thisForm );
-
       if ( recaptcha ) {
         if(typeof grecaptcha !== "undefined" ) {
           grecaptcha.ready(function() {
@@ -50,6 +49,11 @@
   });
 
   function php_email_form_submit(thisForm, action, formData) {
+    if (grecaptcha.getResponse().length === 0)
+    {
+      displayError(thisForm, 'Please fill recaptcha!')
+      return;
+    }
     fetch(action, {
       method: 'POST',
       body: formData,
@@ -60,7 +64,7 @@
     })
     .then(data => {
       thisForm.querySelector('.loading').classList.remove('d-block');
-      if (data.trim() == 'OK') {
+      if (data.trim() == 'Message Sent!') {
         thisForm.querySelector('.sent-message').classList.add('d-block');
         thisForm.reset(); 
       } else {
