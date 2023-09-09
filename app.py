@@ -84,13 +84,21 @@ def is_valid_email(email):
     try:
         response = requests.get(
             os.environ.get("EMAIL_API_ENDPOINT"),
-            params={"email": email},
-            headers={"Authorization": os.environ.get("EMAIL_API_KEY")},
+            params={"api_key": os.environ.get("EMAIL_API_KEY"), "email": email},
             timeout=30,
         )
-        return response.json()["status"]
+        
+        data = response.json()
+
+        # Check the 'deliverability' field in the response data.
+        if data.get('deliverability') == "DELIVERABLE":
+            return "valid"
+        return False
+
     except ConnectTimeout:
         return False
+
+
 
 
 if __name__ == "__main__":
