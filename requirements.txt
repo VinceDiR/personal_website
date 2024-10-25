@@ -11,4 +11,4 @@ MarkupSafe==2.1.2
 python-dotenv==0.21.1
 requests==2.32.2
 urllib3==1.26.19
-Werkzeug==3.0.1
+Werkzeug==3.0.6
