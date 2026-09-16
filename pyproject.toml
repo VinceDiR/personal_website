@@ -1,0 +1,5 @@
+# black has no config of its own by default, so a bare `black .` would use its 88-column
+# default and reformat code that flake8 (max-line-length = 100) is perfectly happy with.
+# Pinning it here keeps `black .` and `flake8 .` agreeing without either needing a flag.
+[tool.black]
+line-length = 100
