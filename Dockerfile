@@ -1,17 +1,18 @@
-FROM python:3.10-alpine
-# copy the requirements file into the image
-COPY ./requirements.txt /app/requirements.txt
+FROM python:3.12-slim
 
-# switch working directory
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PORT=8000
+
 WORKDIR /app
 
-# install the dependencies and packages in the requirements file
-RUN pip install -r requirements.txt
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
 
-# copy every content from the local file to the image
-COPY . /app
+COPY . .
 
-# configure the container to run in an executed manner
-ENTRYPOINT [ "python" ]
+RUN useradd --create-home appuser
+USER appuser
 
-CMD ["app.py" ]
+EXPOSE 8000
+CMD ["gunicorn", "app:app"]

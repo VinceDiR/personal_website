@@ -1,7 +1,9 @@
-bin/*
-lib/*
-include/*
-__pychache__/*
-README.md
-runtime.txt
+.git
+.gitignore
+.venv
+__pycache__
+*.pyc
 .env
+.DS_Store
+README.md
+node_modules

@@ -1,0 +1,5 @@
+[flake8]
+max-line-length = 100
+# E203 disagrees with black on slice spacing.
+extend-ignore = E203
+exclude = .venv,__pycache__,.git,static/assets/vendor
