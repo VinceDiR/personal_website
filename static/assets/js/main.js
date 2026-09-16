@@ -1,227 +1,152 @@
 /**
-* Template Name: DevFolio - v4.10.0
-* Template URL: https://bootstrapmade.com/devfolio-bootstrap-portfolio-html-template/
-* Author: BootstrapMade.com
-* License: https://bootstrapmade.com/license/
-*/
-(function() {
+ * Site behaviour: sticky header, scroll-spy nav, mobile menu, typed hero
+ * subtitle, and the contact form submit. Adapted from the DevFolio template
+ * by BootstrapMade (https://bootstrapmade.com/license/).
+ */
+(() => {
   "use strict";
 
-  /**
-   * Easy selector helper function
-   */
-  const select = (el, all = false) => {
-    el = el.trim()
-    if (all) {
-      return [...document.querySelectorAll(el)]
-    } else {
-      return document.querySelector(el)
-    }
-  }
+  const $ = (selector, all = false) =>
+    all ? [...document.querySelectorAll(selector)] : document.querySelector(selector);
 
-  /**
-   * Easy event listener function
-   */
-  const on = (type, el, listener, all = false) => {
-    let selectEl = select(el, all)
-    if (selectEl) {
-      if (all) {
-        selectEl.forEach(e => e.addEventListener(type, listener))
-      } else {
-        selectEl.addEventListener(type, listener)
-      }
-    }
-  }
+  const header = $("#header");
+  const navbar = $("#navbar");
+  const navToggle = $(".mobile-nav-toggle");
+  const backToTop = $(".back-to-top");
+  const navLinks = $("#navbar .scrollto", true);
 
-  /**
-   * Easy on scroll event listener 
-   */
-  const onscroll = (el, listener) => {
-    el.addEventListener('scroll', listener)
-  }
+  /* Header state, back-to-top button, and active nav link follow the scroll position. */
+  const onScroll = () => {
+    const y = window.scrollY;
+    header.classList.toggle("header-scrolled", y > 100);
+    backToTop.classList.toggle("active", y > 100);
 
-  /**
-   * Navbar links active state on scroll
-   */
-  let navbarlinks = select('#navbar .scrollto', true)
-  const navbarlinksActive = () => {
-    let position = window.scrollY + 200
-    navbarlinks.forEach(navbarlink => {
-      if (!navbarlink.hash) return
-      let section = select(navbarlink.hash)
-      if (!section) return
-      if (position >= section.offsetTop && position <= (section.offsetTop + section.offsetHeight)) {
-        navbarlink.classList.add('active')
-      } else {
-        navbarlink.classList.remove('active')
-      }
-    })
-  }
-  window.addEventListener('load', navbarlinksActive)
-  onscroll(document, navbarlinksActive)
+    const probe = y + 200;
+    navLinks.forEach((link) => {
+      const section = link.hash && document.querySelector(link.hash);
+      if (!section) return;
+      const inView = probe >= section.offsetTop && probe <= section.offsetTop + section.offsetHeight;
+      link.classList.toggle("active", inView);
+    });
+  };
+  window.addEventListener("scroll", onScroll, { passive: true });
+  window.addEventListener("load", onScroll);
 
-  /**
-   * Scrolls to an element with header offset
-   */
-  const scrollto = (el) => {
-    let header = select('#header')
-    let offset = header.offsetHeight
+  /* Smooth scroll that leaves room for the fixed header. */
+  const scrollTo = (hash) => {
+    const target = document.querySelector(hash);
+    if (!target) return;
+    let offset = header.offsetHeight;
+    if (!header.classList.contains("header-scrolled")) offset -= 16;
+    window.scrollTo({ top: target.offsetTop - offset, behavior: "smooth" });
+  };
 
-    if (!header.classList.contains('header-scrolled')) {
-      offset -= 16
-    }
+  const setMobileNav = (open) => {
+    navbar.classList.toggle("navbar-mobile", open);
+    navToggle.classList.toggle("bi-list", !open);
+    navToggle.classList.toggle("bi-x", open);
+    navToggle.setAttribute("aria-expanded", String(open));
+  };
+  navToggle.addEventListener("click", () => {
+    setMobileNav(!navbar.classList.contains("navbar-mobile"));
+  });
 
-    let elementPos = select(el).offsetTop
-    window.scrollTo({
-      top: elementPos - offset,
-      behavior: 'smooth'
-    })
-  }
+  $(".scrollto", true).forEach((link) => {
+    link.addEventListener("click", (event) => {
+      if (!link.hash || !document.querySelector(link.hash)) return;
+      event.preventDefault();
+      setMobileNav(false);
+      scrollTo(link.hash);
+    });
+  });
 
-  /**
-   * Toggle .header-scrolled class to #header when page is scrolled
-   */
-  let selectHeader = select('#header')
-  if (selectHeader) {
-    const headerScrolled = () => {
-      if (window.scrollY > 100) {
-        selectHeader.classList.add('header-scrolled')
-      } else {
-        selectHeader.classList.remove('header-scrolled')
-      }
-    }
-    window.addEventListener('load', headerScrolled)
-    onscroll(document, headerScrolled)
-  }
-
-  /**
-   * Back to top button
-   */
-  let backtotop = select('.back-to-top')
-  if (backtotop) {
-    const toggleBacktotop = () => {
-      if (window.scrollY > 100) {
-        backtotop.classList.add('active')
-      } else {
-        backtotop.classList.remove('active')
-      }
-    }
-    window.addEventListener('load', toggleBacktotop)
-    onscroll(document, toggleBacktotop)
-  }
-
-  /**
-   * Mobile nav toggle
-   */
-  on('click', '.mobile-nav-toggle', function(e) {
-    select('#navbar').classList.toggle('navbar-mobile')
-    this.classList.toggle('bi-list')
-    this.classList.toggle('bi-x')
-  })
-
-  /**
-   * Mobile nav dropdowns activate
-   */
-  on('click', '.navbar .dropdown > a', function(e) {
-    if (select('#navbar').classList.contains('navbar-mobile')) {
-      e.preventDefault()
-      this.nextElementSibling.classList.toggle('dropdown-active')
-    }
-  }, true)
-
-  /**
-   * Scrool with ofset on links with a class name .scrollto
-   */
-  on('click', '.scrollto', function(e) {
-    if (select(this.hash)) {
-      e.preventDefault()
-      let navbar = select('#navbar')
-      if (navbar.classList.contains('navbar-mobile')) {
-        navbar.classList.remove('navbar-mobile')
-        let navbarToggle = select('.mobile-nav-toggle')
-        navbarToggle.classList.toggle('bi-list')
-        navbarToggle.classList.toggle('bi-x')
-      }
-      scrollto(this.hash)
-    }
-  }, true)
-
-  /**
-   * Scroll with ofset on page load with hash links in the url
-   */
-  window.addEventListener('load', () => {
-    if (window.location.hash) {
-      if (select(window.location.hash)) {
-        scrollto(window.location.hash)
-      }
+  window.addEventListener("load", () => {
+    if (window.location.hash && document.querySelector(window.location.hash)) {
+      scrollTo(window.location.hash);
     }
   });
 
-  /**
-   * Intro type effect
-   */
-  const typed = select('.typed')
-  if (typed) {
-    let typed_strings = typed.getAttribute('data-typed-items')
-    typed_strings = typed_strings.split(',')
-    new Typed('.typed', {
-      strings: typed_strings,
+  /* Hero subtitle typing effect. */
+  const typed = $(".typed");
+  if (typed && typeof Typed !== "undefined") {
+    new Typed(".typed", {
+      strings: typed.dataset.typedItems.split(",").map((s) => s.trim()),
       loop: true,
       typeSpeed: 100,
       backSpeed: 50,
-      backDelay: 2000
+      backDelay: 2000,
     });
   }
 
+  /* Contact form: post as JSON-returning fetch so the page never reloads. */
+  const form = $("#contact-form");
+  if (form) {
+    const loading = form.querySelector(".loading");
+    const errorBox = form.querySelector(".error-message");
+    const sentBox = form.querySelector(".sent-message");
+    const submitButton = form.querySelector("button[type=submit]");
 
-  /**
-   * Testimonials slider
-   */
-  new Swiper('.testimonials-slider', {
-    speed: 600,
-    loop: true,
-    autoplay: {
-      delay: 5000,
-      disableOnInteraction: false
-    },
-    slidesPerView: 'auto',
-    pagination: {
-      el: '.swiper-pagination',
-      type: 'bullets',
-      clickable: true
-    }
-  });
+    const showError = (text) => {
+      errorBox.textContent = text;
+      errorBox.classList.add("d-block");
+    };
 
-  /**
-   * Portfolio details slider
-   */
-  new Swiper('.portfolio-details-slider', {
-    speed: 400,
-    loop: true,
-    autoplay: {
-      delay: 5000,
-      disableOnInteraction: false
-    },
-    pagination: {
-      el: '.swiper-pagination',
-      type: 'bullets',
-      clickable: true
-    }
-  });
+    const postForm = async () => {
+      // The render-time token lives on the form element, not in an input, so
+      // only a client that executed this script can send it.
+      const body = new FormData(form);
+      if (!form.dataset.ft) console.warn("contact form token missing");
+      body.set("ft", form.dataset.ft || "");
+      const response = await fetch(form.action, {
+        method: "POST",
+        body,
+        headers: { Accept: "application/json" },
+      });
+      return response.json().catch(() => ({ ok: false }));
+    };
 
-  /**
-   * Preloader
-   */
-  let preloader = select('#preloader');
-  if (preloader) {
-    window.addEventListener('load', () => {
-      preloader.remove()
+    const refreshToken = async () => {
+      const response = await fetch("/form-token", { headers: { Accept: "application/json" } });
+      const data = await response.json().catch(() => ({}));
+      if (data.token) form.dataset.ft = data.token;
+    };
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      errorBox.classList.remove("d-block");
+      sentBox.classList.remove("d-block");
+
+      if (typeof grecaptcha === "undefined" || !grecaptcha.getResponse()) {
+        showError("Please complete the reCAPTCHA.");
+        return;
+      }
+
+      loading.classList.add("d-block");
+      submitButton.disabled = true;
+      try {
+        let data = await postForm();
+        if (data.code === "ft-expired") {
+          // The page sat open past the token lifetime. Fetch a new token and retry
+          // once, instead of making the visitor reload and retype the message. The
+          // reCAPTCHA answer is still unspent: that gate runs after the token gate.
+          await refreshToken();
+          data = await postForm();
+        }
+        if (!data.ok) {
+          throw new Error(data.error || "Something went wrong. Please try again later.");
+        }
+        sentBox.textContent = data.message;
+        sentBox.classList.add("d-block");
+        form.reset();
+      } catch (error) {
+        showError(error.message);
+      } finally {
+        loading.classList.remove("d-block");
+        submitButton.disabled = false;
+        // A solved reCAPTCHA is single-use, so clear it on every outcome; retrying
+        // with a spent token fails verification and looks like an attack.
+        if (typeof grecaptcha !== "undefined") grecaptcha.reset();
+      }
     });
   }
-
-  /**
-   * Initiate Pure Counter 
-   */
-  new PureCounter();
-
-})()
+})();
